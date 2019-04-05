@@ -482,12 +482,13 @@ d3.select('.country-show-emissions-wrap a#production')
 
 // TODO(olc): Move to redux
 window.toggleSource = (state) => {
-    /* changing whether we display electricity production or carbon emission graphs */
+    /* changing whether we display electricity production, carbon emission graphs or CO2 offset */
     if (state === undefined) {
         state = !tableDisplayEmissions;
     }
-    console.log("toggle state: " + state);
+    console.log("tableDisplayEmissions state before: " + tableDisplayEmissions);
     tableDisplayEmissions = state;
+    console.log("tableDisplayEmissions state after: " + tableDisplayEmissions);
     thirdPartyServices.track(
         tableDisplayEmissions ? 'switchToCountryEmissions' : 'switchToCountryProduction', {
             countryCode: countryTable.data().countryCode
