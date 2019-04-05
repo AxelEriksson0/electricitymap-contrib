@@ -28,7 +28,7 @@ function CountryTable(selector, modeColor, modeOrder) {
 
     this.wrapperNoDataOverlay = new NoDataOverlay('.country-table-container');
     this.container = this.root.append('svg').attr('class', 'country-table');
-    
+
     // Create containers
     this.headerRoot = this.container.append('g');
     this.productionRoot = this.container.append('g');
@@ -104,7 +104,7 @@ CountryTable.prototype.render = function(ignoreTransitions) {
     if (!this._data || !this._data.countryCode) {
         return;
     }
- 
+
     // Set header
     const panel = d3.select('.left-panel-zone-details');
     const datetime = this._data.stateDatetime || this._data.datetime;
@@ -114,7 +114,7 @@ CountryTable.prototype.render = function(ignoreTransitions) {
 
     panel.selectAll('.country-time')
         .text(datetime ? moment(datetime).format('LL LT') : '');
-        
+
     if (this.isMissingParser){
         return;
     }
@@ -124,9 +124,9 @@ CountryTable.prototype.render = function(ignoreTransitions) {
     if (width <= 0) {
       return;
     }
-    
+
     if (!this._exchangeData) { return; }
-    
+
     // Update scale
     this.barMaxWidth = width - this.LABEL_MAX_WIDTH - this.PADDING_X;
     this.powerScale
@@ -134,7 +134,7 @@ CountryTable.prototype.render = function(ignoreTransitions) {
     this.co2Scale
         .range([0, this.barMaxWidth]);
 
-    var axisHeight = 
+    var axisHeight =
         (this.MODES.length + this._exchangeData.length + 1) * (this.ROW_HEIGHT + this.PADDING_Y)
         + this.PADDING_Y;
 
@@ -228,8 +228,8 @@ CountryTable.prototype.render = function(ignoreTransitions) {
         .duration(ignoreTransitions ? 0 : this.TRANSITION_DURATION)
         .attr('x', that.LABEL_MAX_WIDTH + (that._displayByEmissions ? that.co2Scale(0) : that.powerScale(0)))
         .style('display', function (d) {
-            return (d.capacity == undefined || d.capacity > 0) && 
-                d.mode != 'unknown' && 
+            return (d.capacity == undefined || d.capacity > 0) &&
+                d.mode != 'unknown' &&
                 (d.isStorage ? d.storage == undefined : d.production == undefined) ?
                 'block' : 'none';
         });
@@ -260,7 +260,7 @@ CountryTable.prototype.render = function(ignoreTransitions) {
         .attr('height', this.FLAG_SIZE);
     gNewRow.append('text')
         .style('text-anchor', 'end') // right align
-        .attr('transform', 
+        .attr('transform',
             'translate(' + (this.LABEL_MAX_WIDTH - 2.0 * this.PADDING_X) + ', ' +
                 this.TEXT_ADJUST_Y + ')');
     gNewRow.append('text')
@@ -273,14 +273,14 @@ CountryTable.prototype.render = function(ignoreTransitions) {
         .attr('fill-opacity', 0.4)
         .attr('opacity', 0.3)
         .attr('shape-rendering', 'crispEdges')
-        .attr('x', that.LABEL_MAX_WIDTH + 
+        .attr('x', that.LABEL_MAX_WIDTH +
             (this._displayByEmissions ? this.co2Scale(0) : this.powerScale(0)))
         .style('transform-origin', 'left');
     gNewRow.append('rect')
         .attr('class', 'exchange')
         .attr('height', this.ROW_HEIGHT)
         .attr('opacity', this.RECT_OPACITY)
-        .attr('x', that.LABEL_MAX_WIDTH + 
+        .attr('x', that.LABEL_MAX_WIDTH +
             (this._displayByEmissions ? this.co2Scale(0) : this.powerScale(0)))
         .style('transform-origin', 'left');
 
@@ -341,7 +341,7 @@ CountryTable.prototype.render = function(ignoreTransitions) {
                 return that.LABEL_MAX_WIDTH + that.powerScale(Math.min(d.value || 0.0, 0.0));
             }
         })
-        .attr('width', function (d) { 
+        .attr('width', function (d) {
             if (that._displayByEmissions) {
                 var co2intensity = getExchangeCo2eq(d);
                 if (getExchangeCo2eq(d) === undefined)
@@ -526,7 +526,7 @@ CountryTable.prototype.data = function(arg) {
       };
     });
 
-    
+
     // update scales
     this.powerScale
         .domain(this._powerScaleDomain || [
@@ -572,7 +572,7 @@ CountryTable.prototype.data = function(arg) {
             maxAxisValue);
         var f = d3.formatPrefix('.' + p, maxAxisValue);
         this.axis = d3.axisTop(this.co2Scale)
-            .tickFormat(function (d) { 
+            .tickFormat(function (d) {
                 // convert to kgs if max value is below 1t
                 return maxAxisValue <= 1 ? `${d*1000} kg/min` : `${f(d)} t/min`
                 })
