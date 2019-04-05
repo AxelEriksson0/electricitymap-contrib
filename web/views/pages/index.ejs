@@ -291,6 +291,17 @@ co2Sub = function(str) {
                                         <div class="country-col-headline"><%- co2Sub(__('country-panel.carbonintensity')) %></div>
                                         <div class="country-col-subtext">(gCO<span class="sub">2</span>eq/kWh)</div>
                                     </div>
+                                    <div class="country-col country-emission-intensity-wrap">
+                                        <div id="country-offset-rect" class="country-col-box emission-rect emission-rect-overview" style="background-color: rgb(100, 183, 93)">
+                                            <div><span
+                                            class="country-emission-intensity"></span>-20 g</div>
+                                        </div>
+                                        <div class="country-col-headline"><%-
+                                        co2Sub(__('country-panel.offset')) %></div>
+                                        <div
+                                        class="country-col-subtext">(gCO<span
+                                        class="sub">2</span>eq/kWh)</div>
+                                    </div>
                                     <div class="country-col country-lowcarbon-wrap">
                                         <div id="country-lowcarbon-gauge" class="country-gauge-wrap"></div>
                                         <div class="country-col-headline"><%- co2Sub(__('country-panel.lowcarbon')) %></div>
@@ -302,36 +313,19 @@ co2Sub = function(str) {
                                     </div>
                                 </div>
 
-                                <div class="country-show-emissions-wrap">
-                                  <div class="menu">
-                                    <a class="selected" href="javascript:toggleSource(false)">Production Export Carbon Intensity</a>
-                                  </div>
-                                </div>
-
-                                <hr style="margin-top: 0; background-color: lightgrey; margin-bottom: 1rem;">
-
-                                <div class="zone-details">
-                                    <div class="country-table-header-inner" style="justify-content: flex-start">
-
-                                        <div class="country-col country-emission-intensity-wrap">
-                                            <div style="background-color: rgb(100, 183, 93)" id="country-emission-rect" class="country-col-box emission-rect emission-rect-overview">
-                                                <div><span class="country-emission-intensity"></span>-20g</div>
-                                            </div>
-                                            <div class="country-col-headline">Carbon Offset Export</div>
-                                            <div class="country-col-subtext">(gCO<span class="sub">2</span>eq/kWh)</div>
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
                                 <!-- </div> -->
 
                                 <div class="country-show-emissions-wrap">
                                     <div class="menu">
-                                        <a id="production" href="javascript:toggleSource(false)"></a>
+                                        <a id="production"
+                                        href="javascript:toggleSource(true)"><%- (__('country-panel.emissions')) %></a>
                                         |
-                                        <a id="emissions" href="javascript:toggleSource(true)"><%- co2Sub(__('country-panel.emissions')) %></a>
+                                        <a id="emissions"
+                                        href="javascript:toggleSource(true)"><%- (__('country-panel.emissions')) %></a>
+                                        |
+                                        <a id="offset"
+                                        href="javascript:toggleSource(true)"><%-
+                                        (__('country-panel.offset')) %></a>
                                     </div>
                                 </div>
                             </div>

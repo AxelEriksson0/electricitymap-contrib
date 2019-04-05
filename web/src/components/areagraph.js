@@ -1,16 +1,17 @@
 'use strict'
 
-const d3 = Object.assign(
-  {},
-  require('d3-array'),
-  require('d3-axis'),
-  require('d3-collection'),
-  require('d3-selection'),
-  require('d3-scale'),
-  require('d3-shape'),
+const d3 = Object.assign({},
+    require('d3-array'),
+    require('d3-axis'),
+    require('d3-collection'),
+    require('d3-selection'),
+    require('d3-scale'),
+    require('d3-shape'),
 );
 // see https://stackoverflow.com/questions/36887428/d3-event-is-null-in-a-reactjs-d3js-component
-import {event as currentEvent} from 'd3-selection';
+import {
+    event as currentEvent
+} from 'd3-selection';
 var moment = require('moment');
 
 function AreaGraph(selector, modeColor, modeOrder) {
@@ -49,17 +50,25 @@ function AreaGraph(selector, modeColor, modeOrder) {
     this.z = d3.scaleOrdinal();
 
     this._area = d3.area()
-        .x(function(d, i) { return that.x(d.data.datetime); })
-        .y0(function(d) { return that.y(d[0]); })
-        .y1(function(d) { return that.y(d[1]); })
-        .defined(function(d, i) { return isFinite(d[1]); });
+        .x(function(d, i) {
+            return that.x(d.data.datetime);
+        })
+        .y0(function(d) {
+            return that.y(d[0]);
+        })
+        .y1(function(d) {
+            return that.y(d[1]);
+        })
+        .defined(function(d, i) {
+            return isFinite(d[1]);
+        });
 
     // Other variables
     this.modeColor = modeColor;
     this.modeOrder = modeOrder;
 }
 
-AreaGraph.prototype.data = function (arg) {
+AreaGraph.prototype.data = function(arg) {
     if (!arguments.length) return this._originalData;
     if (!arg) {
         return this;
@@ -86,6 +95,8 @@ AreaGraph.prototype.data = function (arg) {
             if (isFinite(value) && that._displayByEmissions && obj[k] != null) {
                 // in tCO2eq/min
                 if (isStorage && obj[k] >= 0) {
+                    console.log(k + ": " + obj[k])
+                    console.log(d)
                     obj[k] *= d.dischargeCo2Intensities[k.replace(' storage', '')] / 1e3 / 60.0
                 } else {
                     obj[k] *= d.productionCo2Intensities[k] / 1e3 / 60.0
@@ -93,15 +104,15 @@ AreaGraph.prototype.data = function (arg) {
             }
         })
         if (that._electricityMixMode === 'consumption') {
-          // Add exchange
-          d3.entries(d.exchange).forEach(function(o) {
-              exchangeKeysSet.add(o.key);
-              obj[o.key] = Math.max(0, o.value);
-              if (isFinite(o.value) && that._displayByEmissions && obj[o.key] != null) {
-                  // in tCO2eq/min
-                  obj[o.key] *= d.exchangeCo2Intensities[o.key] / 1e3 / 60.0
-              }
-          });
+            // Add exchange
+            d3.entries(d.exchange).forEach(function(o) {
+                exchangeKeysSet.add(o.key);
+                obj[o.key] = Math.max(0, o.value);
+                if (isFinite(o.value) && that._displayByEmissions && obj[o.key] != null) {
+                    // in tCO2eq/min
+                    obj[o.key] *= d.exchangeCo2Intensities[o.key] / 1e3 / 60.0
+                }
+            });
         }
         // Keep a pointer to original data
         obj._countryData = d;
@@ -112,7 +123,7 @@ AreaGraph.prototype.data = function (arg) {
     // Order is defined here, from bottom to top
     this.stackKeys = this.modeOrder;
     if (this._electricityMixMode === 'consumption') {
-      this.stackKeys = this.stackKeys.concat(exchangeKeysSet.values());
+        this.stackKeys = this.stackKeys.concat(exchangeKeysSet.values());
     }
     this.stack = d3.stack()
         .offset(d3.stackOffsetDiverging)
@@ -122,7 +133,9 @@ AreaGraph.prototype.data = function (arg) {
     if (this._xDomain) {
         this.x.domain(this._xDomain);
     } else {
-        this.x.domain(d3.extent(this._data, function(d) { return d.datetime; }));
+        this.x.domain(d3.extent(this._data, function(d) {
+            return d.datetime;
+        }));
     }
     this.y.domain([
         0,
@@ -137,10 +150,14 @@ AreaGraph.prototype.data = function (arg) {
     ]);
     this.z
         .domain(this.stackKeys)
-        .range(this.stackKeys.map(function(d) { return that.modeColor[d] }))
+        .range(this.stackKeys.map(function(d) {
+            return that.modeColor[d]
+        }))
 
     // Cache datetimes
-    this._datetimes = this._data.map(function(d) { return d.datetime; });
+    this._datetimes = this._data.map(function(d) {
+        return d.datetime;
+    });
 
     return this;
 }
@@ -155,7 +172,9 @@ AreaGraph.prototype.render = function() {
         data = this._data,
         area = this._area;
 
-    if (!data || !stack) { return this; }
+    if (!data || !stack) {
+        return this;
+    }
 
     // Update scale if needed
     if (this._xDomain) {
@@ -163,7 +182,7 @@ AreaGraph.prototype.render = function() {
     }
 
     // Set scale range, based on effective pixel size
-    var width  = this.rootElement.node().getBoundingClientRect().width,
+    var width = this.rootElement.node().getBoundingClientRect().width,
         height = this.rootElement.node().getBoundingClientRect().height;
     if (!width || !height) return this;
     var X_AXIS_HEIGHT = 20;
@@ -183,46 +202,55 @@ AreaGraph.prototype.render = function() {
     linearGradientSelection.exit().remove()
     linearGradientSelection.enter()
         .append('linearGradient')
-            .attr('gradientUnits', 'userSpaceOnUse')
+        .attr('gradientUnits', 'userSpaceOnUse')
         .merge(linearGradientSelection)
-            .attr('id', function(d) { return 'areagraph-exchange-' + d })
-            .attr('x1', x.range()[0])
-            .attr('x2', x.range()[1])
-            .each(function(k, i) {
-                var selection = d3.select(this).selectAll('stop')
-                    .data(data)
-                var gradientData = selection
-                    .enter().append('stop');
-                gradientData.merge(selection)
-                    .attr('offset', function(d, i) {
-                        return (that.x(d.datetime) - that.x.range()[0]) /
-                            (that.x.range()[1] - that.x.range()[0]) * 100.0 + '%';
-                    })
-                    .attr('stop-color', function(d) {
-                        if (d._countryData.exchangeCo2Intensities) {
-                            return that.co2color()(d._countryData.exchangeCo2Intensities[k]);
-                        } else { return 'darkgray' }
-                    });
-            })
+        .attr('id', function(d) {
+            return 'areagraph-exchange-' + d
+        })
+        .attr('x1', x.range()[0])
+        .attr('x2', x.range()[1])
+        .each(function(k, i) {
+            var selection = d3.select(this).selectAll('stop')
+                .data(data)
+            var gradientData = selection
+                .enter().append('stop');
+            gradientData.merge(selection)
+                .attr('offset', function(d, i) {
+                    return (that.x(d.datetime) - that.x.range()[0]) /
+                        (that.x.range()[1] - that.x.range()[0]) * 100.0 + '%';
+                })
+                .attr('stop-color', function(d) {
+                    if (d._countryData.exchangeCo2Intensities) {
+                        return that.co2color()(d._countryData.exchangeCo2Intensities[k]);
+                    } else {
+                        return 'darkgray'
+                    }
+                });
+        })
 
     var selection = this.graphElement
         .selectAll('.layer')
         .data(stack)
     selection.exit().remove();
     var layer = selection.enter().append('path')
-        .attr('class', function(d) { return 'area layer ' + d.key })
+        .attr('class', function(d) {
+            return 'area layer ' + d.key
+        })
 
 
     var datetimes = this._datetimes;
+
     function detectPosition(d3Event) {
-        if (!d3Event) { d3Event = currentEvent; }
+        if (!d3Event) {
+            d3Event = currentEvent;
+        }
         if (!datetimes.length) return;
         var dx = d3Event.pageX ? (d3Event.pageX - this.parentNode.getBoundingClientRect().left) :
             (d3.touches(this)[0][0]);
         var datetime = x.invert(dx);
         // Find data point closest to
         var i = d3.bisectLeft(datetimes, datetime);
-        if (i > 0 && datetime - datetimes[i-1] < datetimes[i] - datetime)
+        if (i > 0 && datetime - datetimes[i - 1] < datetimes[i] - datetime)
             i--;
         if (i > datetimes.length - 1) i = datetimes.length - 1;
         return i;
@@ -272,7 +300,9 @@ AreaGraph.prototype.render = function() {
             }
         })
         .transition()
-        .style('fill', function(d) { return fillColor.call(that, d) })
+        .style('fill', function(d) {
+            return fillColor.call(that, d)
+        })
         .attr('d', area);
 
     this.interactionRect
@@ -280,8 +310,10 @@ AreaGraph.prototype.render = function() {
         .attr('y', y.range()[1])
         .attr('width', x.range()[1] - x.range()[0])
         .attr('height', y.range()[0] - y.range()[1])
-        .on('mouseover', function () {
-            if (!data.length) { return; }
+        .on('mouseover', function() {
+            if (!data.length) {
+                return;
+            }
             if (mouseOutTimeout) {
                 clearTimeout(mouseOutTimeout);
                 mouseOutTimeout = undefined;
@@ -291,8 +323,10 @@ AreaGraph.prototype.render = function() {
             if (that.mouseOverHandler)
                 that.mouseOverHandler.call(this, data[i]._countryData, i);
         })
-        .on('mouseout', function () {
-            if (!data.length) { return; }
+        .on('mouseout', function() {
+            if (!data.length) {
+                return;
+            }
             var innerThis = this;
             var d3Event = currentEvent;
             mouseOutTimeout = setTimeout(function() {
@@ -302,8 +336,10 @@ AreaGraph.prototype.render = function() {
                     that.mouseOutHandler.call(innerThis, data[i]._countryData, i);
             }, 100)
         })
-        .on('mousemove', function () {
-            if (!data.length) { return; }
+        .on('mousemove', function() {
+            if (!data.length) {
+                return;
+            }
             var i = detectPosition.call(this);
             if (that.mouseMoveHandler)
                 that.mouseMoveHandler.call(this, data[i]._countryData, i);
@@ -312,7 +348,9 @@ AreaGraph.prototype.render = function() {
     // x axis
     var xAxis = d3.axisBottom(x)
         .ticks(5)
-        .tickFormat(function(d) { return moment(d).format('LT'); });
+        .tickFormat(function(d) {
+            return moment(d).format('LT');
+        });
     this.xAxisElement
         .attr('transform', `translate(-1 ${height - X_AXIS_HEIGHT - 1})`)
         .call(xAxis);
@@ -390,9 +428,11 @@ AreaGraph.prototype.selectedIndex = function(arg) {
         var that = this;
 
         this._selectedIndex = arg;
-        if (!this._data) { return this; }
+        if (!this._data) {
+            return this;
+        }
         if (this._selectedIndex == null) {
-            this.verticalLine.style('display', 'none')    
+            this.verticalLine.style('display', 'none')
         } else {
             this.verticalLine
                 .attr('x1', this.x(this._data[this._selectedIndex].datetime))
@@ -430,9 +470,9 @@ AreaGraph.prototype.displayByEmissions = function(arg) {
 }
 
 AreaGraph.prototype.electricityMixMode = function(arg) {
-  if (!arguments.length) return this._electricityMixMode;
-  else this._electricityMixMode = arg;
-  return this;
+    if (!arguments.length) return this._electricityMixMode;
+    else this._electricityMixMode = arg;
+    return this;
 };
 
 module.exports = AreaGraph;
