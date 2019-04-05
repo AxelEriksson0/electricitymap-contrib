@@ -1,6 +1,45 @@
 {
     "data": {
         "countries": {
+
+          "NO-NO4": {
+              "maxProduction": 5644.0,
+              "totalProduction": 16174.0,
+              "zoneKey": "NO-NO4",
+              "production": {
+                  "biomass": 113.0,
+                  "oil": 21.0,
+                  "wind": 1.0,
+                  "solar": 0.0,
+                  "gas": 5644.0,
+                  "unknown": 5136.0,
+                  "coal": 1170.0,
+                  "hydro": 4089.0,
+                  "nuclear": null,
+                  "geothermal": null
+              },
+              "storage": {
+                  "hydro": -812.0
+              },
+              "exchange": {
+                  "CH": 2294.0,
+                  "AT": 200.0,
+                  "IT-CNO": -514.0,
+                  "SI": 656.0,
+                  "FR": 1189.0
+              },
+              "datetime": "2018-09-17T18:00:00+00:00",
+              "co2intensity": 108.00638508501352,
+              "source": "entsoe.eu",
+              "exchangeCo2Intensities": {
+                  "CH": 75.00382804816225,
+                  "AT": 193.87379955869233,
+                  "IT-CNO": 108.00638508501352,
+                  "SI": 198.75315988475057,
+                  "FR": 277.0010440527939
+              }
+          },
+
             "IN-GJ": {
                 "maxProduction": 1912.0,
                 "totalProduction": 4087.0,
